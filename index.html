@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BEL – BestLife Server</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:  #00ff88;
+    --gold:   #ffd700;
+    --red:    #ff4455;
+    --blue:   #5dade2;
+    --iron:   #b0bec5;
+    --diamond:#48d6f0;
+    --bg:     #0b0f1a;
+    --card:   #111827;
+    --border: #1e2d45;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: #e0e6f0;
+    font-family: 'Tajawal', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── stars bg ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 15%, rgba(255,255,255,.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 60%, rgba(255,255,255,.35) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 75%, rgba(255,255,255,.25) 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 85%, rgba(255,255,255,.3) 0%, transparent 100%),
+      radial-gradient(2px 2px at 90% 10%, rgba(255,255,255,.2) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 60px 20px 40px;
+  }
+
+  .logo-wrap {
+    display: inline-block;
+    position: relative;
+  }
+
+  .logo-glow {
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(ellipse, rgba(0,255,136,.18) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%,100% { opacity: .6; transform: scale(1); }
+    50%      { opacity: 1;  transform: scale(1.1); }
+  }
+
+  .logo-bel {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(48px, 10vw, 96px);
+    color: var(--green);
+    text-shadow:
+      0 0 20px var(--green),
+      0 0 60px rgba(0,255,136,.4),
+      4px 4px 0 #005533;
+    letter-spacing: 6px;
+    line-height: 1;
+    position: relative;
+  }
+
+  .logo-sub {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(16px, 3vw, 22px);
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    opacity: .9;
+  }
+
+  /* ─── STATUS BAR ─── */
+  .status-bar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin: 10px auto 0;
+    background: rgba(0,255,136,.06);
+    border: 1px solid rgba(0,255,136,.2);
+    border-radius: 50px;
+    padding: 10px 28px;
+    width: fit-content;
+    backdrop-filter: blur(8px);
+  }
+
+  .status-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green);
+    animation: blink 1.2s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%,100% { opacity:1; }
+    50%      { opacity:.2; }
+  }
+
+  .status-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 2px;
+  }
+
+  .status-players {
+    font-size: 12px;
+    color: #6a90c0;
+    letter-spacing: 1px;
+    border-right: 1px solid var(--border);
+    padding-right: 16px;
+    margin-right: 4px;
+  }
+
+  /* ─── MAIN CONTENT ─── */
+  main {
+    position: relative;
+    z-index: 10;
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 36px;
+    border-radius: 12px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: transform .15s, box-shadow .15s;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 1px;
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,.12) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .btn:hover { transform: translateY(-3px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-discord {
+    background: linear-gradient(135deg, #5865f2, #4752c4);
+    color: #fff;
+    box-shadow: 0 6px 30px rgba(88,101,242,.4);
+    width: 100%;
+    justify-content: center;
+    font-size: 20px;
+  }
+  .btn-discord:hover { box-shadow: 0 10px 40px rgba(88,101,242,.6); }
+
+  .btn-quests {
+    background: linear-gradient(135deg, #ffd700, #e6a800);
+    color: #1a0f00;
+    box-shadow: 0 6px 30px rgba(255,215,0,.3);
+    width: 100%;
+    justify-content: center;
+    font-size: 20px;
+  }
+  .btn-quests:hover { box-shadow: 0 10px 40px rgba(255,215,0,.5); }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #2a3a5c;
+    font-size: 12px;
+    letter-spacing: 3px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ══════════════════════════════════════
+     QUESTS OVERLAY
+  ══════════════════════════════════════ */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5,8,15,.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .35s;
+  }
+
+  .overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .quests-panel {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 620px;
+    padding: 36px;
+    position: relative;
+    margin: auto;
+    box-shadow: 0 0 80px rgba(0,0,0,.8), 0 0 40px rgba(0,255,136,.05);
+    transform: translateY(30px);
+    transition: transform .35s;
+  }
+
+  .overlay.open .quests-panel {
+    transform: translateY(0);
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    width: 36px; height: 36px;
+    background: rgba(255,68,85,.15);
+    border: 1px solid rgba(255,68,85,.3);
+    border-radius: 8px;
+    color: var(--red);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .close-btn:hover { background: rgba(255,68,85,.3); }
+
+  .quests-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 8px;
+    text-shadow: 0 0 20px rgba(255,215,0,.4);
+  }
+
+  .quests-hint {
+    text-align: center;
+    background: rgba(88,101,242,.12);
+    border: 1px solid rgba(88,101,242,.3);
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 15px;
+    color: #a0b4e0;
+    margin-bottom: 28px;
+    line-height: 1.7;
+  }
+
+  .quests-hint strong {
+    color: #7289da;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  /* Quest cards */
+  .quest-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .quest-card {
+    background: #0d1626;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: 16px;
+    transition: border-color .2s, box-shadow .2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quest-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 3px; height: 100%;
+    border-radius: 0 14px 14px 0;
+  }
+
+  .quest-card.wood::before    { background: #8d6e63; }
+  .quest-card.meat::before    { background: #ef9a9a; }
+  .quest-card.discord::before { background: #5865f2; }
+  .quest-card::before { background: var(--c, #2a3a5c); }
+
+  .quest-card:hover {
+    border-color: rgba(255,215,0,.3);
+    box-shadow: 0 4px 20px rgba(255,215,0,.08);
+  }
+
+  .quest-icon {
+    width: 56px; height: 56px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .quest-icon.wood    { background: rgba(141,110,99,.2); }
+  .quest-icon.meat    { background: rgba(239,154,154,.15); }
+  .quest-icon.discord { background: rgba(88,101,242,.15); }
+
+  .quest-info { min-width: 0; }
+
+  .quest-num {
+    font-size: 10px;
+    color: #4a6080;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .quest-name {
+    font-size: 17px;
+    font-weight: 900;
+    color: #e8f0ff;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .quest-desc {
+    font-size: 13px;
+    color: #5a7090;
+    line-height: 1.5;
+  }
+
+  .quest-reward {
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .reward-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+
+  .reward-amount {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .reward-amount.diamond { color: var(--diamond); text-shadow: 0 0 10px rgba(72,214,240,.4); }
+  .reward-amount.iron    { color: var(--iron);    text-shadow: 0 0 10px rgba(176,190,197,.3); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 30px 20px 40px;
+    color: #2a3a5c;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="logo-wrap">
+    <div class="logo-glow"></div>
+    <div class="logo-bel">BEL</div>
+  </div>
+  <div class="logo-sub">BestLife</div>
+  <div class="status-bar" style="margin-top:18px;">
+    <div class="status-dot"></div>
+    <span class="status-text">🟢 SERVER ONLINE</span>
+  </div>
+</header>
+
+<!-- ══ MAIN ══ -->
+<main>
+
+  <!-- Discord join button -->
+  <a href="https://discord.gg/vyUes7dDr" target="_blank" class="btn btn-discord">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.03.053a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+    انضم للديسكورد
+  </a>
+
+  <div class="divider">المهام</div>
+
+  <!-- Quests button -->
+  <button class="btn btn-quests" onclick="openQuests()">
+    ⚔️ &nbsp; شاهد المهام
+  </button>
+
+</main>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  BEL · BestLife Server &nbsp;·&nbsp; جميع الحقوق محفوظة
+</footer>
+
+<!-- ══ QUESTS OVERLAY ══ -->
+<div class="overlay" id="overlay" onclick="closeOnBg(event)">
+  <div class="quests-panel">
+
+    <button class="close-btn" onclick="closeQuests()">✕</button>
+
+    <div class="quests-title">⚔ المهام</div>
+
+    <div class="quests-hint">
+      <strong>📸 كيف تطالب بجائزتك؟</strong>
+      انشر صورة إنجاز المهمة في ديسكورد داخل روم <b>#المهام</b> وسيتم منحك جائزتك فوراً
+    </div>
+
+    <div class="quest-list">
+
+      <!-- Quest 1 -->
+      <div class="quest-card wood">
+        <div class="quest-icon wood">🪵</div>
+        <div class="quest-info">
+          <div class="quest-num">مهمة #1</div>
+          <div class="quest-name">قاطع الأخشاب</div>
+          <div class="quest-desc">اجمع <b>64 خشب مو محلل</b></div>
+        </div>
+        <div class="quest-reward">
+          <span class="reward-icon">💎</span>
+          <div class="reward-amount diamond">10<br>DIAMOND</div>
+        </div>
+      </div>
+
+      <!-- Quest 2 -->
+      <div class="quest-card meat">
+        <div class="quest-icon meat">🥩</div>
+        <div class="quest-info">
+          <div class="quest-num">مهمة #2</div>
+          <div class="quest-name">الصياد المحترف</div>
+          <div class="quest-desc">اجمع <b>120 لحمة خروف</b> من الغنم في العالم</div>
+        </div>
+        <div class="quest-reward">
+          <span class="reward-icon">🔩</span>
+          <div class="reward-amount iron">30<br>IRON</div>
+        </div>
+      </div>
+
+      <!-- Quest 3 -->
+      <div class="quest-card discord">
+        <div class="quest-icon discord">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#5865f2"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.03.053a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+        </div>
+        <div class="quest-info">
+          <div class="quest-num">مهمة #3</div>
+          <div class="quest-name">عضو الديسكورد</div>
+          <div class="quest-desc">ادخل سيرفر الديسكورد وتحقق من حسابك في روم الـ verify</div>
+        </div>
+        <div class="quest-reward">
+          <span class="reward-icon">💎</span>
+          <div class="reward-amount diamond">5<br>DIAMOND</div>
+        </div>
+      </div>
+
+      <!-- Quest 4 -->
+      <div class="quest-card" style="--c:#f59e0b;">
+        <div class="quest-icon" style="background:rgba(245,158,11,.15);font-size:28px;">🌾</div>
+        <div class="quest-info">
+          <div class="quest-num">مهمة #4</div>
+          <div class="quest-name">المزارع الكبير</div>
+          <div class="quest-desc">اجمع <b>128 قمح</b> من مزرعتك الخاصة</div>
+        </div>
+        <div class="quest-reward">
+          <span class="reward-icon">💎</span>
+          <div class="reward-amount diamond">15<br>DIAMOND</div>
+        </div>
+      </div>
+
+      <!-- Quest 5 -->
+      <div class="quest-card" style="--c:#64748b;">
+        <div class="quest-icon" style="background:rgba(100,116,139,.15);font-size:28px;">⛏️</div>
+        <div class="quest-info">
+          <div class="quest-num">مهمة #5</div>
+          <div class="quest-name">عامل المناجم</div>
+          <div class="quest-desc">اجمع <b>64 حديد</b> من باطن الأرض</div>
+        </div>
+        <div class="quest-reward">
+          <span class="reward-icon">💎</span>
+          <div class="reward-amount diamond">20<br>DIAMOND</div>
+        </div>
+      </div>
+
+      <!-- Quest 6 -->
+      <div class="quest-card" style="--c:#10b981;">
+        <div class="quest-icon" style="background:rgba(16,185,129,.15);font-size:28px;">🐟</div>
+        <div class="quest-info">
+          <div class="quest-num">مهمة #6</div>
+          <div class="quest-name">الصياد الصبور</div>
+          <div class="quest-desc">اصطد <b>50 سمكة</b> من أي نهر أو بحر</div>
+        </div>
+        <div class="quest-reward">
+          <span class="reward-icon">🔩</span>
+          <div class="reward-amount iron">50<br>IRON</div>
+        </div>
+      </div>
+
+      <!-- Quest 7 -->
+      <div class="quest-card" style="--c:#8b5cf6;">
+        <div class="quest-icon" style="background:rgba(139,92,246,.15);font-size:28px;">🏠</div>
+        <div class="quest-info">
+          <div class="quest-num">مهمة #7</div>
+          <div class="quest-name">باني المدينة</div>
+          <div class="quest-desc">ابني بيت كامل من الحجر فيه <b>4 غرف أو أكثر</b></div>
+        </div>
+        <div class="quest-reward">
+          <span class="reward-icon">💎</span>
+          <div class="reward-amount diamond">40<br>DIAMOND</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function openQuests() {
+    document.getElementById('overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeQuests() {
+    document.getElementById('overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeOnBg(e) {
+    if (e.target === document.getElementById('overlay')) closeQuests();
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeQuests();
+  });
+</script>
+</body>
+</html>
